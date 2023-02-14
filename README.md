@@ -1,10 +1,8 @@
 update-route53
 ======
-Script to update AWS Route 53 record set upon EC2 instance startup.
+Script to update AWS Route 53 record set on startup of Lightsail instance.
 
-The public IP address given to an EC2 instance changes after an instance stops and starts again. This causes any Route53 recordsets to become instantly outdated. An easy fix is to use (VPC) Elastic IPs, which stick with the EC2 after a restart; however, [you can only have 5 per region](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html#using-instance-addressing-limit) and need a good excuse when asking Amazon to increase it.
-
-So, to get around this limitation, with the help of some other articles, I created a procedure that allows each EC2 instance to update their IP address to its corresponding Route53 recordset.
+The public IP address given to a Lightsail instance changes after an instance stops and starts again. This causes any Route53 recordsets to become instantly outdated. An easy fix is to use (VPC) Elastic IPs, which stick with the EC2 after a restart; however, [you can only have 5 per region](http://docs.aws.amazon.com/AWSEC2/latest/UserGuide/elastic-ip-addresses-eip.html#using-instance-addressing-limit) and need a good excuse when asking Amazon to increase it.
  
 ### Table of Contents
 &nbsp;&nbsp;[Pre-requisites](#1-pre-requisites)  
@@ -46,26 +44,21 @@ Your EC2 instance will need permissions to update a Route53 recordset. To avoid 
 <br />
 
 ### Install the AWS Command Line Interface (AWS-CLI)
-Install the AWS CLI using [pip](http://docs.aws.amazon.com/cli/latest/userguide/awscli-install-linux.html) or use the [bundled installer](http://docs.aws.amazon.com/cli/latest/userguide/awscli-install-bundle.html).
 
->Note 1: I used an AMI from the marketplace and experienced several conflicts when installing `pip`. The bundled installer was much easier in this case.
-
->Note 2: If using `pip`, you may need to add a symlink for the AWS-CLI to the `/usr/bin` directory. In the example below, `awscli` was installed in the `/home/bitnami/.local/bin/aws` directory.
-```bash
-sudo ln -s /home/bitnami/.local/bin/aws /usr/bin/aws
-```
-
->Note 3: If using the bundled installer, when running the executable (step 3), change the directory after the `-b` option to `/usr/bin/aws` to avoid creating a symlink manually.
-```bash
-sudo ./awscli-bundle/install -i /usr/local/aws -b /usr/bin/aws
+Install the AWS CLI 
+```curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
+unzip awscliv2.zip
+sudo ./aws/install 
 ```
 <br />
+Configure the AWS CLI using sudo so that the configuration applies to root. 
+```sudo aws configure```
+TODO: Add instructions for service-linked role configuration (https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-using-service-linked-roles)
 
 ## 2. Download the Script
 Download the script into your `/etc/init.d` directory.
 ```bash
-cd /etc/init.d
-curl -LO "https://raw.githubusercontent.com/jeremyhatfield/update-route53/master/update-route53.sh"
+ sudo curl --location "https://raw.githubusercontent.com/nccer-org/update-route53/master/update-route53.sh" --output /etc/init.d/update-route53.sh 
 ```
 <br /><br />
 
