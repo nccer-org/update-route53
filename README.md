@@ -17,40 +17,19 @@ The public IP address given to a Lightsail instance changes after an instance st
 
 ## 1. Pre-requisites
 
-###  Create AWS IAM Role.
-Your EC2 instance will need permissions to update a Route53 recordset. To avoid storing keys on the EC2 instance, you will setup a new role in IAM and attach it to your EC2 at launch. (We'll use  the console to create the role.)
-
-  * Within IAM's navigation pane, click on 'Roles.'  
-  * Click the 'Create New Role' button.  
-![Create New Role Button](/../readme-images/images/1-create-new-role.png?raw=true "Create New Role")
+###  IAM Role already created with permissions to update Route53.
+We are using `DNSManagers_NCCER`.
+We have three NCCER policies, one for each domain in Route53. BYF domain is separate.
 <br />
 
-  * Name your new role. I use `route53-editor`. Click Next Step.  
-![Set Role Name](/../readme-images/images/2-set-role-name.png?raw=true "Set Role Name")
-<br />
-
-  * Select the `Amazon EC2` service role, under the `AWS Service Roles` section.  
-![Select Role Type](/../readme-images/images/3-select-role-type.png?raw=true "Select Role Type")
-<br />
-
-  * Attach a policy. In the filter, type `route53`. Choose the `AmazonRoute53FullAccess` policy and click Next Step.  
-![Attach Policy](/../readme-images/images/4-attach-policy.png?raw=true "Attach Policy")
-<br />
-
-  * Review your settings on the next page, and if correct, click the Create Role button.  
-  
-  * Use this new role when launching your EC2 instances.  
-  >Note: If you have an existing role that you need to use, just attach the Route53 policy to your existing role.
-<br />
-
-### Install the AWS Command Line Interface (AWS-CLI)
-
+### AWS Command Line Interface is already installed
 Install the AWS CLI 
 ```curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" 
 unzip awscliv2.zip
 sudo ./aws/install 
 ```
 <br />
+### AWS ClI is already correctly configured
 Configure the AWS CLI using sudo so that the configuration applies to root. 
 ```sudo aws configure```
 TODO: Add instructions for service-linked role configuration (https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-using-service-linked-roles)
@@ -80,6 +59,10 @@ sudo update-rc.d update-route53.sh defaults
 ```
 >Note: To remove the script from runlevels...`sudo update-rc.d /etc/init.d/update-route53.sh remove`
 <br />
+### Testing Functionality
+IP addresses dont usually change when you reboot. To force an IP change on an existing instance, stop the instance, wait until it has completely shut down, then start it again. This will cause a new IP to be applied, and the script will update DNS. 
+
+If something doesn't work, check the log file as configured 
 
 ### References
 Creating the script:  
